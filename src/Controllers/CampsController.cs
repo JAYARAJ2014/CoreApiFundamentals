@@ -24,17 +24,17 @@ namespace src.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<CampDto[]>> GetCamps()
+        public async Task<ActionResult<CampDto[]>> GetCamps(bool includeTalks = false)
         {
             try
             {
-                var result = await _campRepository.GetAllCampsAsync();
+                var result = await _campRepository.GetAllCampsAsync(includeTalks);
                 CampDto[] camps = _mapper.Map<CampDto[]>(result);
                 return camps;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Failure retrieving camps");
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Failure retrieving camps\n" + ex.Message + "\n" + ex.InnerException??"");
             }
         }
 
