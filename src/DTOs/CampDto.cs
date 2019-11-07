@@ -7,24 +7,24 @@ namespace CoreCodeCamp.DTOs
     public class CampDto
     {
 
-      [Required]
-      [StringLength(50)]
+        [Required]
+        [StringLength(50)]
         public string Name { get; set; }
-      [Required]
-        
+        [Required]
+
         public string Moniker { get; set; }
         public DateTime EventDate { get; set; } = DateTime.MinValue;
-      [Range(1,100)]
+        [Range(1, 100)]
 
         public int Length { get; set; } = 1;
         public string Venue { get; set; }
-        public string Address1 { get; set; }
-        public string Address2 { get; set; }
-        public string Address3 { get; set; }
-        public string CityTown { get; set; }
-        public string StateProvince { get; set; }
-        public string PostalCode { get; set; }
-        public string Country { get; set; }
-        public ICollection<TalkDto> Talks {get;set;}
+        public string LocationAddress1 { get; set; }
+        public string LocationAddress2 { get; set; }
+        public string LocationAddress3 { get; set; }
+        public string LocationCityTown { get; set; }
+        public string LocationStateProvince { get; set; }
+        public string LocationPostalCode { get; set; }
+        public string LocationCountry { get; set; }
+        public ICollection<TalkDto> Talks { get; set; }
     }
 }
