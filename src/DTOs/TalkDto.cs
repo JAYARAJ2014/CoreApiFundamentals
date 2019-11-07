@@ -6,5 +6,7 @@ namespace CoreCodeCamp.DTOs
         public string Abstract { get; set; }
         public int Level { get; set; }
 
+        public SpeakerDto Speaker {get;set;}
+
     }
 }
