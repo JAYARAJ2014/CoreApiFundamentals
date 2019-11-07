@@ -16,3 +16,9 @@ Automapper maps by the name by default. If you have a related object such as Loc
 you can include this in the Dto with the following name so that automapper will automatically map it. If you dont like this method then you have to explicitly map them in the profile.
 
 `        public string LocationVenueName { get; set; }`
+
+
+## Model Binding
+
+` [FromBody] ` or ` [ApiController] ` can be used. APicontroller from ASp.net core 2.1 onwards only
+

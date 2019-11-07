@@ -6,20 +6,30 @@ using CoreCodeCamp.Data;
 using CoreCodeCamp.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Logging;
 
 namespace src.Controllers
 {
 
     [Route("api/[controller]")]
+    [ApiController]
     public class CampsController : ControllerBase
     {
         private ICampRepository _campRepository;
         private IMapper _mapper;
+        private LinkGenerator _linkGenerator;
+        private ILogger _logger;
 
-        public CampsController(ICampRepository campRepo, IMapper mapper)
+        public CampsController(ICampRepository campRepo
+        , IMapper mapper
+        , LinkGenerator linkGenerator
+        , ILogger<CampsController> logger)
         {
             _campRepository = campRepo;
             _mapper = mapper;
+            _logger = logger;
+            _linkGenerator = linkGenerator;
         }
 
 
@@ -34,7 +44,7 @@ namespace src.Controllers
             }
             catch (Exception ex)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Failure retrieving camps\n" + ex.Message + "\n" + ex.InnerException??"");
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Failure retrieving camps\n" + ex.Message + "\n" + ex.InnerException ?? "");
             }
         }
 
@@ -67,6 +77,35 @@ namespace src.Controllers
             catch (System.Exception)
             {
                 return this.StatusCode(StatusCodes.Status500InternalServerError, "Failure retrieving camps");
+            }
+        }
+
+
+        [HttpPost]
+        public async Task<ActionResult<CampDto>> Post(CampDto model)
+        {
+
+            try
+            {
+                var location = _linkGenerator.GetPathByAction("GetCamp", "Camps", new {moniker=model.Moniker});
+                 _logger.LogInformation($"{location}");
+                 
+                if(string.IsNullOrWhiteSpace(location)){
+                    return BadRequest("Could not use current moniker");
+                }
+                _logger.LogInformation($"model.Moniker:{model.Moniker},  model.Name:{model.Name}");
+                var camp = _mapper.Map<Camp>(model);
+                _logger.LogInformation("Mapping done");
+                _campRepository.Add(camp);
+                if (await _campRepository.SaveChangesAsync())
+                {
+                    return Created("", _mapper.Map<CampDto>(camp));
+                }
+                return BadRequest();
+            }
+            catch (System.Exception ex)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Failed to create Camp" + ex.StackTrace);
             }
         }
     }
