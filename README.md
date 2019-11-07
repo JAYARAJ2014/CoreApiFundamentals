@@ -22,3 +22,5 @@ you can include this in the Dto with the following name so that automapper will 
 
 ` [FromBody] ` or ` [ApiController] ` can be used. APicontroller from ASp.net core 2.1 onwards only
 
+
+APIController attribute will apply default behavior to validations . You can turn this off and do ModelState.IsValid if required.

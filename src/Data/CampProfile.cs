@@ -22,6 +22,18 @@ namespace CoreCodeCamp.Data
             .ForMember(c => c.Country, o => o.MapFrom(m => m.Location.Country))
                         ;
 
+            this.CreateMap<CampDto, Camp>();
+            
+            //  .ForMember(c => c.Location.VenueName, o => o.MapFrom(m => m.Venue))
+            // .ForMember(c => c.Location.Address1, o => o.MapFrom(m => m.Address1))
+            // .ForMember(c => c.Location.Address2, o => o.MapFrom(m => m.Address2))
+            // .ForMember(c => c.Location.Address3, o => o.MapFrom(m => m.Address3))
+            // .ForMember(c => c.Location.CityTown, o => o.MapFrom(m => m.CityTown))
+            // .ForMember(c => c.Location.StateProvince, o => o.MapFrom(m => m.StateProvince))
+            // .ForMember(c => c.Location.PostalCode, o => o.MapFrom(m => m.PostalCode))
+            // .ForMember(c => c.Location.Country, o => o.MapFrom(m => m.Country))
+            // ;
+
         }
     }
 

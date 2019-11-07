@@ -87,10 +87,17 @@ namespace src.Controllers
 
             try
             {
-                var location = _linkGenerator.GetPathByAction("GetCamp", "Camps", new {moniker=model.Moniker});
-                 _logger.LogInformation($"{location}");
-                 
-                if(string.IsNullOrWhiteSpace(location)){
+
+                var existing = await _campRepository.GetCampAsync(model.Moniker);
+                if (existing != null)
+                {
+                    return BadRequest("Moniker already in use");
+                }
+                var location = _linkGenerator.GetPathByAction("GetCamp", "Camps", new { moniker = model.Moniker });
+                _logger.LogInformation($"{location}");
+
+                if (string.IsNullOrWhiteSpace(location))
+                {
                     return BadRequest("Could not use current moniker");
                 }
                 _logger.LogInformation($"model.Moniker:{model.Moniker},  model.Name:{model.Name}");
@@ -99,9 +106,38 @@ namespace src.Controllers
                 _campRepository.Add(camp);
                 if (await _campRepository.SaveChangesAsync())
                 {
-                    return Created("", _mapper.Map<CampDto>(camp));
+                    return Created(location, _mapper.Map<CampDto>(camp));
                 }
                 return BadRequest();
+            }
+            catch (System.Exception ex)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Failed to create Camp" + ex.StackTrace);
+            }
+        }
+
+
+
+
+        [HttpPut("{moniker}")]
+        public async Task<ActionResult<CampDto>> Put(String moniker, CampDto model)
+        {
+
+            try
+            {
+
+                var existing = await _campRepository.GetCampAsync(model.Moniker);
+                if (existing == null)
+                {
+                    return NotFound($"Could not find Camp with Moniker: {moniker} ");
+                }
+                _mapper.Map(model, existing);
+                if (await _campRepository.SaveChangesAsync())
+                {
+                    return _mapper.Map<CampDto>(existing);
+                }
+
+                return BadRequest("There was an issue in updating ");
             }
             catch (System.Exception ex)
             {
