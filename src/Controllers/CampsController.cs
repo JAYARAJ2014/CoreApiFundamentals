@@ -122,10 +122,8 @@ namespace src.Controllers
         [HttpPut("{moniker}")]
         public async Task<ActionResult<CampDto>> Put(String moniker, CampDto model)
         {
-
             try
             {
-
                 var existing = await _campRepository.GetCampAsync(model.Moniker);
                 if (existing == null)
                 {

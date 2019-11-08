@@ -46,13 +46,48 @@ namespace src.Controllers
             }
         }
 
-         [HttpGet("{id:int}")]
-        public async Task<ActionResult<TalkDto>> GetTalk(string moniker,int id)
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<TalkDto>> GetTalk(string moniker, int id)
         {
             try
             {
                 var talk = await _campRepository.GetTalkByMonikerAsync(moniker, id);
                 return _mapper.Map<TalkDto>(talk);
+            }
+            catch (Exception ex)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Failure retrieving camps\n" + ex.Message + "\n" + ex.InnerException ?? "");
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<TalkDto>> Post(string moniker, TalkDto model)
+        {
+            try
+            {
+                var camp = await _campRepository.GetCampAsync(moniker);
+                if (camp == null) return BadRequest("Camp does not exist!");
+
+                var talk = _mapper.Map<Talk>(model);
+                talk.Camp = camp;
+
+                if (model.Speaker == null) return BadRequest("Speaker Id is rquired");
+                var speaker = await _campRepository.GetSpeakerAsync(model.Speaker.SpeakerId);
+                if (speaker == null) return BadRequest("Speaker could not be found");
+                talk.Speaker = speaker;
+
+                _campRepository.Add(talk);
+                _logger.LogInformation("Talk added to collection");
+
+                if (await _campRepository.SaveChangesAsync())
+                {
+                    var url = _linkGenerator.GetPathByAction(HttpContext, "GetTalk", values: new { moniker, id = talk.TalkId });
+                    return Created(url, _mapper.Map<TalkDto>(talk));
+                }
+                else
+                {
+                    return BadRequest("Failed to save talk");
+                }
             }
             catch (Exception ex)
             {
