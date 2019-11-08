@@ -144,5 +144,31 @@ namespace src.Controllers
                 return this.StatusCode(StatusCodes.Status500InternalServerError, "Failed to create Camp" + ex.StackTrace);
             }
         }
+
+
+        [HttpDelete("{moniker}")]
+        public async Task<IActionResult> Delete(String moniker)
+        {
+            try
+            {
+                var existing = await _campRepository.GetCampAsync(moniker);
+                if (existing == null)
+                {
+                    return NotFound($"Could not find Camp with Moniker: {moniker} ");
+                }
+                _campRepository.Delete(existing);
+
+                if (await _campRepository.SaveChangesAsync())
+                {
+                    return Ok();
+                }
+
+            }
+            catch (System.Exception ex)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Failed to create Camp" + ex.StackTrace);
+            }
+            return BadRequest("There was an issue in deleting ");
+        }
     }
 }
