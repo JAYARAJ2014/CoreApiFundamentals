@@ -52,6 +52,8 @@ namespace src.Controllers
             try
             {
                 var talk = await _campRepository.GetTalkByMonikerAsync(moniker, id);
+                if(talk==null) return NotFound($"Talk for the camp with {moniker} and id {id} not found");
+                
                 return _mapper.Map<TalkDto>(talk);
             }
             catch (Exception ex)
@@ -127,6 +129,31 @@ namespace src.Controllers
             catch (Exception ex)
             {
                 return this.StatusCode(StatusCodes.Status500InternalServerError, "Failure updating talk" + ex.Message + "\n" + ex.InnerException ?? "");
+            }
+        }
+
+
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Delete(string moniker, int id)
+        {
+            try
+            {
+                var talk = await _campRepository.GetTalkByMonikerAsync(moniker, id);
+                if (talk == null) return BadRequest("Talk does not exist!");
+
+                _campRepository.Delete(talk);
+                if (await _campRepository.SaveChangesAsync())
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest("Failed to delete talk");
+                }
+            }
+            catch (Exception ex)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Failure deleting talk" + ex.Message + "\n" + ex.InnerException ?? "");
             }
         }
 
