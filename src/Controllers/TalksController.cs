@@ -46,5 +46,19 @@ namespace src.Controllers
             }
         }
 
+         [HttpGet("{id:int}")]
+        public async Task<ActionResult<TalkDto>> GetTalk(string moniker,int id)
+        {
+            try
+            {
+                var talk = await _campRepository.GetTalkByMonikerAsync(moniker, id);
+                return _mapper.Map<TalkDto>(talk);
+            }
+            catch (Exception ex)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Failure retrieving camps\n" + ex.Message + "\n" + ex.InnerException ?? "");
+            }
+        }
+
     }
 }

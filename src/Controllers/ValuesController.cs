@@ -3,11 +3,11 @@
 namespace CoreCodeCamp.Controllers
 {
     [Route("api/[controller]")]
-  public class ValuesController
-  {
-    public string[] Get()
+    public class ValuesController
     {
-      return new[] { "Hello", "From","Pluralsight" };
+        public string[] Get()
+        {
+            return new[] { "Hello", "From", "Pluralsight" };
+        }
     }
-  }
 }
