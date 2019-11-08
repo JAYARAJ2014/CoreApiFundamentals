@@ -95,5 +95,40 @@ namespace src.Controllers
             }
         }
 
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<TalkDto>> Put(string moniker, int id, TalkDto model)
+        {
+            try
+            {
+                var talk = await _campRepository.GetTalkByMonikerAsync(moniker, id, true);
+                if (talk == null) return BadRequest("Talk does not exist!");
+
+                if (model.Speaker != null)
+                {
+                    var speaker = await _campRepository.GetSpeakerAsync(model.Speaker.SpeakerId);
+
+                    if (speaker != null)
+                    {
+                        talk.Speaker = speaker;
+                    }
+                }
+                _mapper.Map(model, talk);
+
+                if (await _campRepository.SaveChangesAsync())
+                {
+                    return _mapper.Map<TalkDto>(talk);
+                }
+                else
+                {
+                    return BadRequest("Failed to update");
+                }
+            }
+            catch (Exception ex)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Failure updating talk" + ex.Message + "\n" + ex.InnerException ?? "");
+            }
+        }
+
     }
 }
