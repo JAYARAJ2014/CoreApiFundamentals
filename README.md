@@ -36,3 +36,17 @@ Content-Type versioning
 Add the nuget package dotnet add package Microsoft.AspNetCore.Mvc.Versioning
 in Startup.cs include services.AddApiVersioning();
 `    services.AddMvc(opt=>opt.EnableEndpointRouting=true)`
+
+If version is unspecified we can instruct asp.net to pick the defualt version. 
+
+`
+  services.AddApiVersioning(
+                opt =>
+                {
+                    opt.AssumeDefaultVersionWhenUnspecified=true; //if the requester does not specify version
+                    opt.DefaultApiVersion = new ApiVersion(1, 0); // specifiy the default version
+                    opt.ReportApiVersions = true;  // this will add a api-supported-versions header in response
+                }
+            );
+
+`
