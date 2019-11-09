@@ -22,7 +22,9 @@ namespace CoreCodeCamp
                     opt.AssumeDefaultVersionWhenUnspecified=true;
                     opt.DefaultApiVersion = new ApiVersion(1, 0);
                     opt.ReportApiVersions = true;  // this will add a api-supported-versions header in response
-                    opt.ApiVersionReader = new HeaderApiVersionReader("X-Version");
+                    opt.ApiVersionReader = ApiVersionReader.Combine(
+                         new HeaderApiVersionReader("X-Version"),
+                         new QueryStringApiVersionReader("ver","version","api-version"));
                 }
             );
             services.AddMvc(opt => opt.EnableEndpointRouting = false)
