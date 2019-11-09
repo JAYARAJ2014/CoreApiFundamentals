@@ -23,7 +23,7 @@ namespace src.Controllers
         public TalksController(ICampRepository campRepo
         , IMapper mapper
         , LinkGenerator linkGenerator
-        , ILogger<CampsController> logger)
+        , ILogger<TalksController> logger)
         {
             _campRepository = campRepo;
             _mapper = mapper;

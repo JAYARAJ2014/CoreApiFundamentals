@@ -12,18 +12,17 @@ using Microsoft.Extensions.Logging;
 namespace CoreCodeCamp.Controllers
 {
 
-    [Route("api/[controller]")]
-    [ApiVersion("1.0")]
-    [ApiVersion("1.1")]
+    [Route("api/camps")]
+    [ApiVersion("2.0")]
     [ApiController]
-    public class CampsController : ControllerBase
+    public class CampsControllerV2 : ControllerBase
     {
         private ICampRepository _campRepository;
         private IMapper _mapper;
         private LinkGenerator _linkGenerator;
         private ILogger _logger;
 
-        public CampsController(ICampRepository campRepo
+        public CampsControllerV2(ICampRepository campRepo
         , IMapper mapper
         , LinkGenerator linkGenerator
         , ILogger<CampsController> logger)
@@ -36,13 +35,17 @@ namespace CoreCodeCamp.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<CampDto[]>> GetCamps(bool includeTalks = false)
+        public async Task<IActionResult> GetCamps(bool includeTalks = false)
         {
             try
             {
-                var result = await _campRepository.GetAllCampsAsync(includeTalks);
-                CampDto[] camps = _mapper.Map<CampDto[]>(result);
-                return camps;
+                var results = await _campRepository.GetAllCampsAsync(includeTalks);
+                var result = new {
+                    Camps = _mapper.Map<CampDto[]>(results),
+                    Count = results.Count()
+                };
+               
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -67,21 +70,7 @@ namespace CoreCodeCamp.Controllers
             }
         }
 
-        [HttpGet("{moniker}")]
-        [MapToApiVersion("1.0")]
-        public async Task<ActionResult<CampDto>> GetCampv11(string moniker)
-        {
-            try
-            {
-                var result = await _campRepository.GetCampAsync(moniker,true);
-                if (result == null) NotFound();
-                return _mapper.Map<CampDto>(result);
-            }
-            catch (System.Exception)
-            {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Failure retrieving camps");
-            }
-        }
+     
         [HttpGet("search")]
         public async Task<ActionResult<CampDto[]>> SearchByDate(DateTime theDate, bool includeTalks = false)
         {
