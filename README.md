@@ -24,3 +24,15 @@ you can include this in the Dto with the following name so that automapper will 
 
 
 APIController attribute will apply default behavior to validations . You can turn this off and do ModelState.IsValid if required.
+
+
+### API Versioning 
+
+Specifiying Version in Uri path or query string
+Versioning with Headers
+Accept Header  : applicatino/json ;version=v2
+Content-Type versioning 
+
+Add the nuget package dotnet add package Microsoft.AspNetCore.Mvc.Versioning
+in Startup.cs include services.AddApiVersioning();
+`    services.AddMvc(opt=>opt.EnableEndpointRouting=true)`

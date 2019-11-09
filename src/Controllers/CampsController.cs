@@ -13,6 +13,8 @@ namespace src.Controllers
 {
 
     [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [ApiVersion("1.1")]
     [ApiController]
     public class CampsController : ControllerBase
     {
@@ -48,6 +50,8 @@ namespace src.Controllers
             }
         }
 
+ 
+
         [HttpGet("{moniker}")]
         public async Task<ActionResult<CampDto>> GetCamp(string moniker)
         {
@@ -63,6 +67,21 @@ namespace src.Controllers
             }
         }
 
+        [HttpGet("{moniker}")]
+        [MapToApiVersion("1.0")]
+        public async Task<ActionResult<CampDto>> GetCampv11(string moniker)
+        {
+            try
+            {
+                var result = await _campRepository.GetCampAsync(moniker,true);
+                if (result == null) NotFound();
+                return _mapper.Map<CampDto>(result);
+            }
+            catch (System.Exception)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Failure retrieving camps");
+            }
+        }
         [HttpGet("search")]
         public async Task<ActionResult<CampDto[]>> SearchByDate(DateTime theDate, bool includeTalks = false)
         {
